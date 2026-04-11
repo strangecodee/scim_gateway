@@ -1,0 +1,147 @@
+/* Custom Swagger UI Styling with CDN Icons */
+
+/* Import Font Awesome Icons */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+/* Add icons to API tags */
+.tabli[data-tag="Authentication"] span::before {
+    content: "\f023"; /* fa-lock */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    color: #49cc90;
+}
+
+.tabli[data-tag="SCIM Users"] span::before {
+    content: "\f007"; /* fa-user */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    color: #49cc90;
+}
+
+.tabli[data-tag="SCIM Groups"] span::before {
+    content: "\f0c0"; /* fa-users */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    color: #49cc90;
+}
+
+.tabli[data-tag="Service Config"] span::before {
+    content: "\f013"; /* fa-cog */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    color: #49cc90;
+}
+
+.tabli[data-tag="Resource Types"] span::before {
+    content: "\f02d"; /* fa-book */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    color: #49cc90;
+}
+
+.tabli[data-tag="Schemas"] span::before {
+    content: "\f0cb"; /* fa-list-alt */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    color: #49cc90;
+}
+
+.tabli[data-tag="Applications"] span::before {
+    content: "\f108"; /* fa-server */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    color: #49cc90;
+}
+
+.tabli[data-tag="Provisioning"] span::before {
+    content: "\f0ec"; /* fa-truck */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    color: #49cc90;
+}
+
+/* Improve overall styling */
+.topbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px 0;
+}
+
+.topbar .download-link-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Better tag styling */
+.opblock-tag-section {
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    background: #fff;
+}
+
+.opblock-tag {
+    font-size: 24px;
+    padding: 15px 20px;
+    background: #f7f7f7;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+/* Improve buttons */
+.btn.authorize {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+}
+
+.btn.authorize:hover {
+    opacity: 0.9;
+}
+
+/* Better code blocks */
+.microlight {
+    background: #f5f5f5;
+    border-radius: 4px;
+    padding: 15px;
+    font-size: 14px;
+}
+
+/* Improve response boxes */
+.responses-inner {
+    padding: 20px;
+}
+
+.response-col_description {
+    font-size: 14px;
+}
+
+/* Better tables */
+table.model tr {
+    border-bottom: 1px solid #e8e8e8;
+}
+
+/* Status code colors */
+.response-2xx {
+    background-color: #e6f4ea !important;
+    border-left: 4px solid #49cc90 !important;
+}
+
+.response-4xx {
+    background-color: #fef0f0 !important;
+    border-left: 4px solid #f93e3e !important;
+}
+
+.response-5xx {
+    background-color: #fef0f0 !important;
+    border-left: 4px solid #f93e3e !important;
+}
