@@ -40,22 +40,22 @@ public class OpenApiConfig {
     @Value("${swagger.api.description:}")
     private String apiDescription;
     
-    @Value("${swagger.api.terms-of-service:https://github.com/strangecodee/scim_gateway}")
+    @Value("${swagger.api.terms-of-service:}")
     private String termsOfService;
     
-    @Value("${swagger.contact.name:Anurag Maurya}")
+    @Value("${swagger.contact.name:}")
     private String contactName;
     
-    @Value("${swagger.contact.email:annu.exe@gmail.com}")
+    @Value("${swagger.contact.email:}")
     private String contactEmail;
     
-    @Value("${swagger.contact.url:https://github.com/strangecodee}")
+    @Value("${swagger.contact.url:}")
     private String contactUrl;
     
     @Value("${swagger.license.name:Apache 2.0}")
     private String licenseName;
     
-    @Value("${swagger.license.url:https://www.apache.org/licenses/LICENSE-2.0}")
+    @Value("${swagger.license.url:}")
     private String licenseUrl;
     
     @Value("${swagger.external-docs.description:Complete SCIM Gateway Documentation}")
@@ -70,7 +70,7 @@ public class OpenApiConfig {
     @Value("${swagger.security.description:Enter your JWT Bearer token for authentication.}")
     private String securityDescription;
     
-    @Value("${swagger.server.url:http://localhost:8181}")
+    @Value("${swagger.server.url:}")
     private String serverUrl;
     
     @Value("${swagger.server.description:Local Development Server}")
@@ -131,12 +131,20 @@ public class OpenApiConfig {
     
     /**
      * Build servers list
+     * If no server URL is configured, uses relative path (works for any deployment)
      */
     private List<Server> buildServers() {
         List<Server> servers = new ArrayList<>();
+        
+        // If serverUrl is empty or not set, use relative URL (auto-detects host)
+        String url = (serverUrl == null || serverUrl.trim().isEmpty()) 
+            ? "/" 
+            : serverUrl;
+        
         servers.add(new Server()
-            .url(serverUrl)
+            .url(url)
             .description(serverDescription));
+        
         return servers;
     }
     
