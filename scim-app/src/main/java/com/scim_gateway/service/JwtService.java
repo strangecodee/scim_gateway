@@ -11,10 +11,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * JWT Service for token generation and validation
+ * JWT secret MUST be configured via JWT_SECRET environment variable
+ */
 @Service
 public class JwtService {
     
-    @Value("${jwt.secret:scim-gateway-secret-key-must-be-at-least-256-bits-long-for-hs256}")
+    // JWT secret MUST be configured via JWT_SECRET environment variable
+    // Generate using: openssl rand -base64 32
+    @Value("${jwt.secret}")
     private String secret;
     
     @Value("${jwt.expiration:86400000}") // 24 hours in milliseconds

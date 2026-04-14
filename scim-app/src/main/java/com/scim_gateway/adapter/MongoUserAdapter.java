@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Profile("mongo")
+@Profile({"dev", "mongo", "prod"})
 public class MongoUserAdapter implements UserAdapter {
     
     @Autowired

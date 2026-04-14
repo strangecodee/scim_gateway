@@ -1,5 +1,7 @@
 package com.scim_gateway.controller;
 
+import com.scim_gateway.config.AppProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,11 +13,14 @@ import java.util.Map;
 @RequestMapping("/scim/v2/ServiceProviderConfig")
 public class ScimConfigController {
     
+    @Autowired
+    private AppProperties appProperties;
+    
     @GetMapping
     public Map<String, Object> getConfig() {
         return Map.of(
             "schemas", List.of("urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig"),
-            "documentationUri", "https://github.com/scim-gateway/scim-app",
+            "documentationUri", appProperties.getDocumentation().getBaseUrl(),
             "patch", Map.of("supported", true),
             "bulk", Map.of("supported", false, "maxOperations", 0, "maxPayloadSize", 0),
             "filter", Map.of("supported", true, "maxResults", 100),
@@ -26,16 +31,16 @@ public class ScimConfigController {
                 Map.of(
                     "name", "OAuth Bearer Token",
                     "description", "Authentication scheme using the OAuth Bearer Token Standard",
-                    "specUri", "http://www.rfc-editor.org/info/rfc6750",
-                    "documentationUri", "https://github.com/scim-gateway/scim-app",
-                    "type", "oauthbearertoken",
+                    "specUri", appProperties.getAuthentication().getSpecUri(),
+                    "documentationUri", appProperties.getAuthentication().getDocumentationUri(),
+                    "type", appProperties.getAuthentication().getTokenType(),
                     "primary", true
                 ),
                 Map.of(
                     "name", "Basic Authentication",
                     "description", "Authentication scheme using Basic Authentication",
-                    "specUri", "http://www.rfc-editor.org/info/rfc2617",
-                    "documentationUri", "https://github.com/scim-gateway/scim-app",
+                    "specUri", appProperties.getAuthentication().getBasicSpecUri(),
+                    "documentationUri", appProperties.getAuthentication().getDocumentationUri(),
                     "type", "basic",
                     "primary", false
                 )

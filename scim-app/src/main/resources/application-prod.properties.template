@@ -1,0 +1,147 @@
+spring.application.name=scim-app
+spring.profiles.active=prod
+server.port=8080
+
+# ==========================================
+# Database Configuration
+# ==========================================
+# CRITICAL: Use environment variable for MongoDB URI
+# Format: mongodb+srv://username:password@cluster.mongodb.net/database
+# Set via: export MONGODB_URI="mongodb+srv://..."
+spring.data.mongodb.uri=${MONGODB_URI:mongodb+srv://user:CHANGE_ME@cluster.mongodb.net/scimdb?retryWrites=true&w=majority}
+
+# Connection pool settings for production
+spring.data.mongodb.auto-index-creation=true
+
+# ==========================================
+# SCIM Configuration
+# ==========================================
+scim.max-results=100
+scim.default-count=20
+scim.base-url=/scim/v2
+
+# ==========================================
+# Provisioning Configuration
+# ==========================================
+scim.provisioning.sync-cron=0 0/5 * * * *
+scim.provisioning.max-retries=3
+scim.provisioning.job-retention-days=7
+
+# ==========================================
+# Thread Pool Configuration
+# ==========================================
+spring.task.scheduling.pool.size=5
+spring.task.execution.pool.core-size=5
+spring.task.execution.pool.max-size=10
+
+# ==========================================
+# SpringDoc OpenAPI (Swagger) Configuration
+# ==========================================
+# SECURITY: Consider disabling in production or restricting access
+springdoc.api-docs.enabled=true
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.enabled=true
+springdoc.swagger-ui.path=/swagger-ui.html
+springdoc.swagger-ui.operationsSorter=method
+springdoc.swagger-ui.tagsSorter=alpha
+springdoc.swagger-ui.tryItOutEnabled=true
+springdoc.swagger-ui.filter=true
+
+# ==========================================
+# JWT Configuration
+# ==========================================
+# CRITICAL: Generate using: openssl rand -base64 32
+# Set via environment variable: export JWT_SECRET="your-secret-here"
+jwt.secret=${JWT_SECRET:CHANGE-THIS-IMMEDIATELY-IN-PRODUCTION}
+jwt.expiration=86400000
+
+# ==========================================
+# Authentication Configuration
+# ==========================================
+# CRITICAL: Change default credentials before production!
+# Set via environment variable: export SCIM_ADMIN_PASSWORD="your-strong-password"
+auth.default.username=admin
+auth.default.password=${SCIM_ADMIN_PASSWORD:CHANGE-THIS-IMMEDIATELY}
+auth.enabled=true
+
+# ==========================================
+# External API Configuration
+# ==========================================
+api.external.base-url=
+api.default-timeout=30000
+api.default-retries=3
+
+# ==========================================
+# Application Information
+# ==========================================
+app.info.name=SCIM Gateway
+app.info.version=1.0.0
+app.info.description=SCIM 2.0 compliant identity management gateway
+app.info.vendor=Anurag Maurya
+
+# ==========================================
+# Documentation URLs
+# ==========================================
+app.documentation.base-url=https://github.com/strangecodee
+app.documentation.api-docs=/api-docs
+app.documentation.swagger-ui=/swagger-ui.html
+app.documentation.support-emails[0]=annu.exe@gmail.com
+
+# ==========================================
+# Authentication Documentation URLs
+# ==========================================
+app.authentication.token-type=oauthbearertoken
+app.authentication.spec-uri=http://www.rfc-editor.org/info/rfc6750
+app.authentication.documentation-uri=https://github.com/strangecodee/scim_gateway/blob/main/scim-app/SCIM-GATEWAY-DOCUMENTATION.md
+app.authentication.basic-spec-uri=http://www.rfc-editor.org/info/rfc2617
+app.authentication.license-name=Apache 2.0
+app.authentication.license-url=https://www.apache.org/licenses/LICENSE-2.0
+
+# Swagger UI Custom CSS
+springdoc.swagger-ui.custom-css=/static/swagger-custom.css
+
+# ==========================================
+# Actuator Configuration
+# ==========================================
+# SECURITY: Restrict health details in production
+management.endpoints.web.exposure.include=health,info
+management.endpoint.health.show-details=when-authorized
+management.health.mongodb.enabled=true
+management.health.diskspace.enabled=false
+
+# ==========================================
+# Production Optimizations
+# ==========================================
+# Enable response compression
+server.compression.enabled=true
+server.compression.mime-types=application/json,application/xml,text/html,text/plain
+server.compression.min-response-size=1024
+
+# Request size limits
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+
+# Graceful shutdown
+server.shutdown=graceful
+spring.lifecycle.timeout-per-shutdown-phase=30s
+
+# Logging configuration for production
+logging.level.root=INFO
+logging.level.com.scim_gateway=INFO
+logging.level.org.springframework.security=WARN
+logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+
+# ==========================================
+# SSL/TLS Configuration (if not using reverse proxy)
+# ==========================================
+# server.ssl.enabled=true
+# server.ssl.key-store=classpath:keystore.p12
+# server.ssl.key-store-password=${SSL_KEYSTORE_PASSWORD}
+# server.ssl.key-store-type=PKCS12
+# server.ssl.key-alias=tomcat
+
+# ==========================================
+# CORS Configuration
+# ==========================================
+# Configure allowed origins for production
+# app.cors.allowed-origins=https://your-domain.com,https://admin.your-domain.com

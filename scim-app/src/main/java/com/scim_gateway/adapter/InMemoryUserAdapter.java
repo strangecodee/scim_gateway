@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Profile("dev")
+@Profile("inmem")
 public class InMemoryUserAdapter implements UserAdapter {
     
     private static final Map<String, MongoUser> userStore = new HashMap<>();

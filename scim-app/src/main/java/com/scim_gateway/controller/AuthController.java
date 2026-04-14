@@ -7,10 +7,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -20,38 +27,73 @@ public class AuthController {
     @Autowired
     private JwtService jwtService;
     
-    // Default credentials for development
-    private static final String DEFAULT_USERNAME = "admin";
-    private static final String DEFAULT_PASSWORD = "admin123";
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    
+    @Value("${auth.default.username:admin}")
+    private String defaultUsername;
+    
+    @Value("${auth.default.password:admin123}")
+    private String defaultPassword;
+    
+    @Value("${auth.enabled:true}")
+    private boolean authEnabled;
     
     @Operation(
         summary = "Generate JWT Bearer token",
         description = "Authenticates user with username/password and returns a JWT Bearer token. " +
-                     "Default credentials: username='admin', password='admin123'"
+                     "Credentials are configured via environment variables or application.properties"
     )
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(
             @Parameter(description = "Login credentials (username and password)")
             @RequestBody LoginRequest request) {
         
-        // Simple authentication (replace with real user validation in production)
-        if (!authenticate(request.getUsername(), request.getPassword())) {
-            return ResponseEntity.status(401).build();
+        try {
+            // Authenticate using Spring Security AuthenticationManager
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    request.getUsername(),
+                    request.getPassword()
+                )
+            );
+            
+            // Get user roles/authorities
+            String roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+            
+            // Generate JWT token with roles
+            String token = jwtService.generateToken(request.getUsername(), Map.of(
+                "role", roles,
+                "scope", "scim:full"
+            ));
+            
+            TokenResponse response = new TokenResponse(
+                token,
+                request.getUsername(),
+                jwtService.getExpiration()
+            );
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (BadCredentialsException e) {
+            // Invalid credentials
+            return ResponseEntity.status(401).body(new TokenResponse(
+                null,
+                null,
+                0,
+                "Invalid username or password"
+            ));
+        } catch (Exception e) {
+            // Other authentication errors
+            return ResponseEntity.status(500).body(new TokenResponse(
+                null,
+                null,
+                0,
+                "Authentication failed: " + e.getMessage()
+            ));
         }
-        
-        // Generate JWT token
-        String token = jwtService.generateToken(request.getUsername(), Map.of(
-            "role", "admin",
-            "scope", "scim:full"
-        ));
-        
-        TokenResponse response = new TokenResponse(
-            token,
-            request.getUsername(),
-            jwtService.getExpiration()
-        );
-        
-        return ResponseEntity.ok(response);
     }
     
     @Operation(
@@ -83,30 +125,23 @@ public class AuthController {
     
     @Operation(
         summary = "Get default credentials",
-        description = "Returns the default login credentials for testing purposes"
+        description = "Returns the default login credentials for testing purposes (only in development)"
     )
     @GetMapping("/credentials")
-    public ResponseEntity<Map<String, String>> getCredentials() {
+    public ResponseEntity<Map<String, Object>> getCredentials() {
+        // Only return credentials in development mode
+        if (!authEnabled) {
+            return ResponseEntity.status(403).body(Map.of(
+                "error", "Credentials endpoint disabled in production"
+            ));
+        }
+        
         return ResponseEntity.ok(Map.of(
-            "username", DEFAULT_USERNAME,
-            "password", DEFAULT_PASSWORD,
-            "note", "Use these credentials with /auth/login endpoint"
+            "username", defaultUsername,
+            "password", "********", // Never expose password
+            "note", "Use these credentials with /auth/login endpoint",
+            "warning", "Change default credentials in production"
         ));
     }
     
-    /**
-     * Simple authentication method
-     * Replace this with real database validation in production
-     */
-    private boolean authenticate(String username, String password) {
-        // Default admin credentials
-        if (DEFAULT_USERNAME.equals(username) && DEFAULT_PASSWORD.equals(password)) {
-            return true;
-        }
-        
-        // You can add more users here or validate against database
-        // Example: Check against MongoDB users collection
-        
-        return false;
-    }
 }
